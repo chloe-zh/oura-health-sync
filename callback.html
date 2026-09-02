@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Oura Authorization</title>
+</head>
+<body>
+  <h1>Oura Authorization</h1>
+
+  <p id="status">Reading authorization result...</p>
+
+  <textarea
+    id="token"
+    rows="5"
+    style="width:100%;display:none;"
+    readonly
+  ></textarea>
+
+  <p>
+    <button id="copy" style="display:none;">
+      Copy Access Token
+    </button>
+  </p>
+
+  <script>
+    const params = new URLSearchParams(
+      window.location.hash.substring(1)
+    );
+
+    const token = params.get("access_token");
+    const error = params.get("error");
+
+    history.replaceState(
+      null,
+      "",
+      window.location.pathname
+    );
+
+    const status = document.getElementById("status");
+    const tokenBox = document.getElementById("token");
+    const copyButton = document.getElementById("copy");
+
+    if (token) {
+      status.textContent =
+        "Authorization successful. Copy your access token below.";
+
+      tokenBox.value = token;
+      tokenBox.style.display = "block";
+      copyButton.style.display = "inline-block";
+
+      copyButton.onclick = async () => {
+        await navigator.clipboard.writeText(token);
+        copyButton.textContent = "Copied!";
+      };
+    } else if (error) {
+      status.textContent =
+        "Authorization failed: " + error;
+    } else {
+      status.textContent =
+        "No access token was found.";
+    }
+  </script>
+</body>
+</html>
